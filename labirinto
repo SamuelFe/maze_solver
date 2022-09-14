@@ -1,0 +1,7 @@
+#!/bin/env python3
+
+import mazes as m
+import mazeFunctions as mf
+
+print(m.maze_matrix[0])
+
