@@ -1,6 +1,10 @@
+import time
 import mazes as m
 
 StepCost = 1
+
+def print_spacer():
+    print(m.spacer)
 
 def getInicialState(index): # onde está o início?
     y_pos = 0
@@ -11,31 +15,23 @@ def getInicialState(index): # onde está o início?
             x_pos = x_pos + 1
         y_pos = y_pos + 1
 
-def sucessor(index,x,y): # onde posso ir?
+def sucessor(matrix,x,y): # onde posso ir?
     possibilities = []
-    if m.maze_matrix[index][y-1][x-1] == 1:
-        possibilities.append([x-1,y-1])
-    if m.maze_matrix[index][y][x-1] == 1:
+    if matrix[y][x-1] == 1 or matrix[y][x-1] == 3:
         possibilities.append([x-1,y])
-    if m.maze_matrix[index][y+1][x-1] == 1:
-        possibilities.append([x-1,y+1])
-    if m.maze_matrix[index][y-1][x] == 1:
+    if matrix[y-1][x] == 1 or matrix[y-1][x] == 3:
         possibilities.append([x,y-1])
-    if m.maze_matrix[index][y+1][x] == 1:
+    if matrix[y+1][x] == 1 or matrix[y+1][x] == 3:
         possibilities.append([x,y+1])
-    if m.maze_matrix[index][y-1][x+1] == 1:
-        possibilities.append([x+1,y-1])
-    if m.maze_matrix[index][y][x+1] == 1:
+    if matrix[y][x+1] == 1 or matrix[y][x+1] == 3:
         possibilities.append([x+1,y])
-    if m.maze_matrix[index][y+1][x+1] == 1:
-        possibilities.append([x+1,y+1])
     return possibilities
 
 def result():
     print("")
 
-def objetivo(index,x,y): # chegou ao objetivo?
-    if m.maze_matrix[index][y][x] == 3:
+def objetivo(matrix,x,y): # chegou ao objetivo?
+    if matrix[y][x] == 3:
         print("Objetivo atingido!")
         return True
     return False
@@ -43,13 +39,31 @@ def objetivo(index,x,y): # chegou ao objetivo?
 def PathCost():
     print("")
 
-def replace_char(string,matrix,x,y):
+def print_matrix(m):
+    for line in m:
+        print(line)
+
+def replace_char(string,matrix,x,y,char):
     # marcando como visitano na matriz
-    print(x,y)
     matrix[y][x] = 4
-    print(matrix)
     # ilustrando na string
     char_pos = 2*x + 42*y # retificação da posição na matriz para o labirinto em texto
-    string = string[:char_pos] + '▣' + string[char_pos+1:]
-    print(string)
+    string = string[:char_pos] + char + string[char_pos+1:]
     return string, matrix
+
+def mark_visited(string,matrix,x,y):
+    return replace_char(string,matrix,x,y,'▣')
+
+def walk_into_path(matrix,string,x,y):
+    possibilities = sucessor(matrix,x,y)
+    if len(possibilities) < 1: return
+    for path in possibilities:
+        x = path[0]
+        y = path[1]
+        if objetivo(matrix,x,y): exit(1)
+        string,matrix = mark_visited(string,matrix,x,y)
+        time.sleep(0.2)
+        print_spacer()
+        print(string)
+        walk_into_path(matrix,string,x,y)
+
